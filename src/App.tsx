@@ -34,7 +34,7 @@ const RoutingSystem: React.FC = () =>{
   return(
     <IonReactRouter>
       <IonRouterOutlet>
-      <Route exact path="/" component= {Home} />
+      {/* <Route exact path="/" component= {Home} /> */}
       {/* <Route path="/home" component={Home} exact={true} /> */}
       <Route path="/login" component = {Login} exact/>
       <Route path="/dashboard" component = {Dashboard} exact/>
@@ -58,7 +58,7 @@ const App: React.FC = () => {
         dispatch(setUserState(user.email))
         window.history.replaceState({}, '', '/dashboard')
       }else{
-        window.history.replaceState({}, '', '/')
+        window.history.replaceState({}, '', '/login')
       }
       setBusy(false)
     })

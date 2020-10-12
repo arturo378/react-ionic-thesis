@@ -16,8 +16,8 @@ const Dashboard: React.FC = () => {
     const username = useSelector((state: any) => state.user.username)
     const history = useHistory()
     async function logout(){
-        await logoutUser
-        history.replace('/')
+        await logoutUser()
+        history.replace('/login')
     }
 
      function shippingPapers(){
@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
         </IonItem>
     
 
-
+  <p>Hello {username}</p>
     
         
       </IonContent>

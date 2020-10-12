@@ -1,6 +1,7 @@
 import { resolve } from 'dns'
 import * as firebase from 'firebase'
 
+
 const config = {
     apiKey: "AIzaSyD4RlNnKl7zHleWWpf3aI8vGI4vAmDNAzI",
     authDomain: "thesis-6c5d6.firebaseapp.com",
@@ -22,10 +23,11 @@ export function getCurrentUser() {
         const unsubscribe =firebase.auth().onAuthStateChanged(function(user) {
             if(user){
                 resolve(user)
-                unsubscribe()
+                
             }else{
-                resolve()
+                resolve(null)
             }
+            unsubscribe()
         })
 
     })
@@ -33,7 +35,14 @@ export function getCurrentUser() {
 }
 
 export function logoutUser() {
+
     return firebase.auth().signOut()
+   
+}
+
+
+export function getUserInfo() {
+    return firebase.auth().currentUser;
 }
 
 export async function loginUser(username: string, password: string) {
