@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonSpinner } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
+import Login from './pages/Login';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -22,16 +23,53 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { getCurrentUser } from './firebaseConfig'
+import Dashboard from './pages/Dashboard';
+import { useDispatch } from 'react-redux';
+import {setUserState} from './redux/actions'
+import ShippingPapers from './pages/ShippingPapers';
 
-const App: React.FC = () => (
-  <IonApp>
+ 
+const RoutingSystem: React.FC = () =>{
+  return(
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route path="/home" component={Home} exact={true} />
-        <Route exact path="/" render={() => <Redirect to="/home" />} />
+      <Route exact path="/" component= {Home} />
+      {/* <Route path="/home" component={Home} exact={true} /> */}
+      <Route path="/login" component = {Login} exact/>
+      <Route path="/dashboard" component = {Dashboard} exact/>
+      <Route path="/shippingpapers" component = {ShippingPapers} exact/>
+        
       </IonRouterOutlet>
     </IonReactRouter>
+  )
+
+}
+
+const App: React.FC = () => {
+
+  const [busy, setBusy] = useState(true)
+  const dispatch = useDispatch()
+
+
+  useEffect(() => {
+    getCurrentUser().then((user: any) => {
+      if(user) {
+        dispatch(setUserState(user.email))
+        window.history.replaceState({}, '', '/dashboard')
+      }else{
+        window.history.replaceState({}, '', '/')
+      }
+      setBusy(false)
+    })
+  }, [])
+
+
+  return(
+  <IonApp>
+    {busy ? <IonSpinner></IonSpinner>: <RoutingSystem></RoutingSystem>}
   </IonApp>
-);
+  )
+};
 
 export default App;
