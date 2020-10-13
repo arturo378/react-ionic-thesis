@@ -12,6 +12,8 @@ import {
   IonInput,
 IonLabel,
 IonSelect,
+IonGrid,
+IonRow,
 IonSelectOption } from '@ionic/react';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router'
@@ -138,6 +140,10 @@ const ShippingPapers: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+
+
+      <IonGrid>
+      <IonRow>
       <IonList>
             <IonItem>
             <IonLabel>Origin Warehouse</IonLabel>
@@ -164,8 +170,42 @@ const ShippingPapers: React.FC = () => {
 
           
           </IonList>
+      </IonRow>
+      <IonRow  style={{
+             height : '250em'}}>
 
-      <IonButtons onClick = {submit} >Submit Data</IonButtons>
+      <IonContent
+      className="ion-padding"
+      scrollEvents={true}
+      onIonScrollStart={() => {}}
+      onIonScroll={() => {}}
+      onIonScrollEnd={() => {}}>
+        <IonList>
+        <IonItem>
+        </IonItem>
+        <IonItem>
+            <IonLabel>Mega Man X</IonLabel>
+        </IonItem>
+        <IonItem>
+            <IonLabel>Mega Man X</IonLabel>
+        </IonItem>
+        <IonItem>
+            <IonLabel>Mega Man X</IonLabel>
+        </IonItem>
+        <IonItem>
+            <IonLabel>Mega Man X</IonLabel>
+        </IonItem>
+    </IonList>
+        </IonContent>
+     
+      </IonRow>
+      </IonGrid>
+
+
+
+
+      
+      {/* <IonButtons onClick = {submit} >Submit Data</IonButtons> */}
         
         
       </IonContent>
