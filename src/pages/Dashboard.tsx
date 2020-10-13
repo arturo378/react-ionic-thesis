@@ -1,9 +1,8 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonLoading, IonItem, IonLabel, IonButtons } from '@ionic/react';
 import React, { useState, useEffect } from 'react';
-import ExploreContainer from '../components/ExploreContainer';
+
 import './Home.css';
-import { loginUser } from '../firebaseConfig';
-import { toast } from '../toast';
+
 import { useSelector } from 'react-redux'
 import { logoutUser } from '../firebaseConfig'
 import { useHistory } from 'react-router'

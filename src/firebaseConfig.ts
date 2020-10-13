@@ -15,12 +15,14 @@ const config = {
 
 
 
-firebase.initializeApp(config)
+const fire = firebase.initializeApp(config)
+
+export default fire;
 
 
 export function getCurrentUser() {
     return new Promise((resolve, reject)=> {
-        const unsubscribe =firebase.auth().onAuthStateChanged(function(user) {
+        const unsubscribe =fire.auth().onAuthStateChanged(function(user) {
             if(user){
                 resolve(user)
                 
@@ -36,20 +38,20 @@ export function getCurrentUser() {
 
 export function logoutUser() {
 
-    return firebase.auth().signOut()
+    return fire.auth().signOut()
    
 }
 
 
 export function getUserInfo() {
-    return firebase.auth().currentUser;
+    return fire.auth().currentUser;
 }
 
 export async function loginUser(username: string, password: string) {
 
     const email = username
     try {
-        const res = await firebase.auth().signInWithEmailAndPassword(email, password)
+        const res = await fire.auth().signInWithEmailAndPassword(email, password)
 
         
         return res
