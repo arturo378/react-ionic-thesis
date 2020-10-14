@@ -7,32 +7,43 @@ import {
   IonButton, 
   IonButtons, 
   IonList, 
-  IonItemDivider, 
+  IonModal, 
   IonItem, 
   IonInput,
 IonLabel,
 IonSelect,
 IonGrid,
 IonRow,
-IonSelectOption } from '@ionic/react';
+IonSelectOption,
+IonListHeader,
+IonFabButton } from '@ionic/react';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router'
 import * as firebase from 'firebase'
 import fire, { getUserInfo } from '../firebaseConfig';
 import { Plugins } from '@capacitor/core';
+import { isEmptyBindingElement } from 'typescript';
 
 
 
 
 const ShippingPapers: React.FC = () => {
   const [warehouses, setWarehouses] = useState([''])
-  const [chemicals, setChemicals] = useState({})
+  const [chem_list, setChemlist] = useState([{}])
+  
+  const [chemicals, setChemicals] = useState([''])
   const [coordinates, setCoordinates] = useState({})
   const { Geolocation } = Plugins;
   const [comment, setComment] = useState<string>();
+  const [gallons, setGallons] = useState<number>();
   const [truck, setTruck] = useState<string>();
   const [origin, setOrigin] = useState<string>();
+  const [chemical, setChemical] = useState<string>('');
   const [destination, setDestination] = useState<string>();
+  const [showModal, setShowModal] = useState(false);
+
+  console.log(chem_list)
+  
 
   const history = useHistory()
 
@@ -41,16 +52,47 @@ const ShippingPapers: React.FC = () => {
     history.replace('/dashboard')
 }
 
+function addchemical(){
+  setShowModal(true);
+}
+
+function addchem(){
+
+// Create a new array based on current state
+  
+
+  let list = chem_list.map(obj => ({...obj}));
+
+
+
+
+
+var data = { 
+  name: chemical,
+  quantity: gallons
+};
+
+
+
+
+// Add item to it
+list.push(data);
+
+setChemlist(list)
+
+
+
+
+  setChemical('');
+  setGallons(0);
+  setShowModal(false);
+}
+
 
   async function submit(){
     var data = await getUserInfo();
     if(data){
       
-      
-        console.log(coordinates)
-      
-    
-    
     fire 
           .firestore()
           .collection('asset_data').add({
@@ -121,9 +163,7 @@ const ShippingPapers: React.FC = () => {
         for (var key in chemical_list) {
           chemical.push(chemical_list[key])
         }
-       
-
-
+        console.log(chemical_list)
         setChemicals(chemical)
       })
 
@@ -171,31 +211,33 @@ const ShippingPapers: React.FC = () => {
           
           </IonList>
       </IonRow>
-      <IonRow  style={{
-             height : '250em'}}>
+
+      <IonRow >
 
       <IonContent
+       style={{
+        height : '15em'}}
       className="ion-padding"
-      scrollEvents={true}
+       scrollEvents={true}
       onIonScrollStart={() => {}}
       onIonScroll={() => {}}
       onIonScrollEnd={() => {}}>
+
+        <IonListHeader>
+          Chemicals
+        </IonListHeader>
         <IonList>
-        <IonItem>
-        </IonItem>
-        <IonItem>
-            <IonLabel>Mega Man X</IonLabel>
-        </IonItem>
-        <IonItem>
-            <IonLabel>Mega Man X</IonLabel>
-        </IonItem>
-        <IonItem>
-            <IonLabel>Mega Man X</IonLabel>
-        </IonItem>
-        <IonItem>
-            <IonLabel>Mega Man X</IonLabel>
-        </IonItem>
+        
+        
+        { chem_list.filter(type => Object.keys(type).length != 0).map((info: any) => (
+                  <IonItem>
+                  <IonLabel >{info.name}:  {info.quantity}</IonLabel>
+                  </IonItem>
+                ))}
+       
+       
     </IonList>
+      <IonFabButton size="small" color="danger" onClick = {addchemical}>+</IonFabButton>
         </IonContent>
      
       </IonRow>
@@ -207,7 +249,32 @@ const ShippingPapers: React.FC = () => {
       
       {/* <IonButtons onClick = {submit} >Submit Data</IonButtons> */}
         
-        
+      <IonModal isOpen={showModal} cssClass='my-custom-class'>
+      <IonGrid>
+      <IonRow>
+      <IonLabel>Destination Warehouse:</IonLabel>
+      <IonSelect value={chemical} placeholder="Select One" onIonChange={e => setChemical(e.detail.value)}>
+            { chemicals.map((info: any) => (
+                  <IonSelectOption key={info.id} value={info.tradename}>{info.tradename}</IonSelectOption>
+                ))}
+            </IonSelect>
+      </IonRow>
+      <IonRow>
+
+
+      <IonLabel>Enter Gallons:</IonLabel>
+      
+          <IonItem>
+            <IonInput type="number" value={gallons} placeholder="Enter Number" onIonChange={e => setGallons(parseInt(e.detail.value!, 10))}></IonInput>
+          </IonItem>
+      </IonRow>
+      </IonGrid>
+
+
+    
+          
+        <IonButton onClick={addchem}>Close Modal</IonButton>
+      </IonModal>
       </IonContent>
     </IonPage>
   );
