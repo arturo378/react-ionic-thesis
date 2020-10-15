@@ -16,7 +16,9 @@ IonGrid,
 IonRow,
 IonSelectOption,
 IonListHeader,
-IonFabButton } from '@ionic/react';
+IonFabButton,
+IonItemSliding,
+IonItemOptions } from '@ionic/react';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router'
 import * as firebase from 'firebase'
@@ -27,13 +29,17 @@ import { isEmptyBindingElement } from 'typescript';
 
 
 
+
+
+
 const ShippingPapers: React.FC = () => {
   const [warehouses, setWarehouses] = useState([''])
   const [chem_list, setChemlist] = useState([{}])
-  
+ 
   const [chemicals, setChemicals] = useState([''])
   const [coordinates, setCoordinates] = useState({})
   const { Geolocation } = Plugins;
+  const { Storage } = Plugins;
   const [comment, setComment] = useState<string>();
   const [gallons, setGallons] = useState<number>();
   const [truck, setTruck] = useState<string>();
@@ -42,7 +48,7 @@ const ShippingPapers: React.FC = () => {
   const [destination, setDestination] = useState<string>();
   const [showModal, setShowModal] = useState(false);
 
-  console.log(chem_list)
+  
   
 
   const history = useHistory()
@@ -55,6 +61,14 @@ const ShippingPapers: React.FC = () => {
 function addchemical(){
   setShowModal(true);
 }
+function removechemical(e: any, index: number){
+
+  let list = chem_list.filter(type => Object.keys(type).length != 0).map(obj => ({...obj}));
+
+  list.splice(index,1)
+  setChemlist(list)
+}
+
 
 function addchem(){
 
@@ -62,11 +76,6 @@ function addchem(){
   
 
   let list = chem_list.map(obj => ({...obj}));
-
-
-
-
-
 var data = { 
   name: chemical,
   quantity: gallons
@@ -79,10 +88,6 @@ var data = {
 list.push(data);
 
 setChemlist(list)
-
-
-
-
   setChemical('');
   setGallons(0);
   setShowModal(false);
@@ -106,8 +111,44 @@ setChemlist(list)
             "gps": coordinates,
             type: "shipping_papers"
           })
-          .then(function(){
-           
+          .then(ref => {
+            console.log(ref.id)
+            if(ref.id){
+              for(var x of chem_list){
+                const AddData: any = x;
+                if(AddData.name && AddData.quantity){
+                  fire 
+                  .firestore()
+                  .collection('asset_data').add({
+                    
+                    "name": AddData.name,
+                    "quantity": AddData.quantity,
+                   "shippingid": ref.id,
+                   "type": "shipping_chemical"
+                    
+                    
+                  })
+                  .then(function(){
+                   
+                    console.log("Document successfully written!");
+                  })
+                  .catch(function(error){
+                    console.error("Error writing document: ", error);
+                    
+                  })
+
+                }
+              }
+              set('Shipping_paper', ref.id)
+
+              
+
+            }
+            
+
+
+
+
             console.log("Document successfully written!");
           })
           .catch(function(error){
@@ -118,6 +159,27 @@ setChemlist(list)
         }
 
     
+  }
+
+
+
+   async function set(key: string, value: any): Promise<void> {
+     let total ={
+       data: {"datanumber": "SP-" + Math.round((new Date().getTime() / 1000)),
+       "originwarehousenumber": origin,
+       "destinationwarehousenumber": destination,
+       "trucknumber": truck,
+       "date": new Date(),
+       "comments": comment,
+       "gps": coordinates,
+       type: "shipping_papers"},
+       chemicals: chem_list
+     }
+    await Storage.set({
+      key: key,
+      value: JSON.stringify(total)
+    });
+    history.replace('/dashboard')
   }
 
   async function getCurrentPosition() {
@@ -131,6 +193,7 @@ setChemlist(list)
 
   useEffect(() => {
 
+  
     getCurrentPosition();
     let warehouse: any[] = [];
     let chemical: any[] = [];
@@ -163,7 +226,7 @@ setChemlist(list)
         for (var key in chemical_list) {
           chemical.push(chemical_list[key])
         }
-        console.log(chemical_list)
+        
         setChemicals(chemical)
       })
 
@@ -229,15 +292,19 @@ setChemlist(list)
         <IonList>
         
         
-        { chem_list.filter(type => Object.keys(type).length != 0).map((info: any) => (
-                  <IonItem>
+        { chem_list.filter(type => Object.keys(type).length != 0).map((info: any, index) => (
+                  <IonItemSliding>
+                  <IonItem type ='button' onClick={e => removechemical(info, index)}>
                   <IonLabel >{info.name}:  {info.quantity}</IonLabel>
+                  
                   </IonItem>
+                  </IonItemSliding>
                 ))}
        
        
     </IonList>
       <IonFabButton size="small" color="danger" onClick = {addchemical}>+</IonFabButton>
+      <IonButtons onClick = {submit} >Submit</IonButtons>
         </IonContent>
      
       </IonRow>
