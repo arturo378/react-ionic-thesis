@@ -109,6 +109,7 @@ setChemlist(list)
             "date": new Date(),
             "comments": comment,
             "gps": coordinates,
+            "active": 1, 
             type: "shipping_papers"
           })
           .then(ref => {
@@ -173,7 +174,8 @@ setChemlist(list)
        "comments": comment,
        "gps": coordinates,
        type: "shipping_papers"},
-       chemicals: chem_list
+       chemicals: chem_list,
+       id: value
      }
     await Storage.set({
       key: key,

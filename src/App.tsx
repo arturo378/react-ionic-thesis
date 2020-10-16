@@ -28,6 +28,7 @@ import Dashboard from './pages/Dashboard';
 import { useDispatch } from 'react-redux';
 import {setUserState} from './redux/actions'
 import ShippingPapers from './pages/ShippingPapers';
+import CloseShippingPaper from './pages/CloseShpping';
 
  
 const RoutingSystem: React.FC = () =>{
@@ -39,6 +40,7 @@ const RoutingSystem: React.FC = () =>{
       <Route path="/login" component = {Login} exact/>
       <Route path="/dashboard" component = {Dashboard} exact/>
       <Route path="/shippingpapers" component = {ShippingPapers} exact/>
+      <Route path="/closeshipping" component = {CloseShippingPaper} exact/>
         
       </IonRouterOutlet>
     </IonReactRouter>

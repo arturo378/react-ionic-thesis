@@ -15,6 +15,7 @@ const Dashboard: React.FC = () => {
     const [busy, setBusy] = useState<boolean>(false)
     const username = useSelector((state: any) => state.user.username)
     const history = useHistory()
+    const [shipping, setShipping] = useState<string>();
 
     useEffect(() => {
         getItem();
@@ -22,7 +23,12 @@ const Dashboard: React.FC = () => {
 
     async function getItem() {
       const { value } = await Storage.get({ key: 'Shipping_paper' });
-      console.log('Got item: ', value);
+      if(value){
+        console.log(JSON.parse(value))
+        setShipping(value)
+      }
+      
+      
     }
 
 
@@ -35,6 +41,15 @@ const Dashboard: React.FC = () => {
         
         history.replace('/shippingpapers')
     }
+    function closeShipping(){
+        
+      history.replace('/closeshipping')
+  }
+    function submit(){
+        
+      Storage.clear();
+  }
+  
 
 
   return (
@@ -47,15 +62,30 @@ const Dashboard: React.FC = () => {
       </IonHeader>
      
       <IonContent className="ion-padding">
-            {/*-- Item as a Button --*/}
+
+      {(function() {
+          if (shipping) {
+            return (
+              <IonItem button onClick={closeShipping}>
+            <IonLabel>
+              Close Shipping Paper
+            </IonLabel>
+            </IonItem>
+            )}else{
+              return(
+           
             <IonItem button onClick={shippingPapers}>
-          <IonLabel>
-            Shipping Papers
-          </IonLabel>
-        </IonItem>
+            <IonLabel>
+              Shipping Papers
+            </IonLabel>
+            </IonItem>
+            )}
+        })()}
+            
     
 
   <p>Hello {username}</p>
+  <IonButtons onClick = {submit} >Submit</IonButtons>
     
         
       </IonContent>
