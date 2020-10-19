@@ -15,7 +15,7 @@ import {
   IonItemSliding, } from '@ionic/react';
   import React, { useState, useEffect } from 'react';
   import { useHistory } from 'react-router'
-  import fire, { getUserInfo } from '../firebaseConfig';
+  import fire from '../firebaseConfig';
   import { Plugins } from '@capacitor/core';
 
   
@@ -29,8 +29,10 @@ import {
     
     const [chem_list, setChemlist] = useState([{}])
     const [ID, setID] = useState<string>();
+    const [document_id, setDocumentid] = useState<string>();
     const [Origin, setOrigin] = useState<string>();
     const [Destination, setDestination] = useState<string>();
+
   
     
     const { Storage } = Plugins;
@@ -46,10 +48,38 @@ import {
       
       history.replace('/dashboard')
   }
+
+  function deletedata(){
+    Storage.clear();
+    back()
+}
   
     useEffect(() => {
         getItem();
     }, [])
+
+    function submit(){
+
+      console.log(document_id)
+
+
+      fire 
+      .firestore()
+      .collection('asset_data').doc(document_id).update({
+       
+        active: 0
+      })
+      .then(function(){
+        Storage.clear();
+        back()
+      })
+      .catch(function(error){
+        console.error("Error writing document: ", error);
+        
+      })
+        
+      
+  }
 
 
     async function getItem() {
@@ -57,6 +87,8 @@ import {
         if(value){
           
           var info: any = JSON.parse(value)
+          setDocumentid(info.id)
+          
           setChemlist(info.chemicals)
        
           setID(info.data.datanumber)
@@ -127,6 +159,8 @@ import {
          
          
       </IonList>
+      <IonButton color="primary" expand="full" onClick = {submit}>Close Shipping Paper</IonButton>
+      <IonButton color="danger" expand="full" onClick = {deletedata}>Clear Data</IonButton>
         
           </IonContent>
        

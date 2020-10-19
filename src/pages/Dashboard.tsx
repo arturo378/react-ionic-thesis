@@ -12,7 +12,6 @@ const { Storage } = Plugins;
 
 
 const Dashboard: React.FC = () => {
-    const [busy, setBusy] = useState<boolean>(false)
     const username = useSelector((state: any) => state.user.username)
     const history = useHistory()
     const [shipping, setShipping] = useState<string>();
@@ -44,12 +43,11 @@ const Dashboard: React.FC = () => {
     function closeShipping(){
         
       history.replace('/closeshipping')
-  }
-    function submit(){
+  }function delivery(){
         
-      Storage.clear();
-  }
-  
+    history.replace('/delivery')
+}
+ 
 
 
   return (
@@ -66,11 +64,18 @@ const Dashboard: React.FC = () => {
       {(function() {
           if (shipping) {
             return (
+              <div>
+              <IonItem button onClick={delivery}>
+            <IonLabel>
+              Delivery
+            </IonLabel>
+            </IonItem>
               <IonItem button onClick={closeShipping}>
             <IonLabel>
               Close Shipping Paper
             </IonLabel>
             </IonItem>
+            </div>
             )}else{
               return(
            
@@ -84,8 +89,8 @@ const Dashboard: React.FC = () => {
             
     
 
-  <p>Hello {username}</p>
-  <IonButtons onClick = {submit} >Submit</IonButtons>
+  
+  
     
         
       </IonContent>
