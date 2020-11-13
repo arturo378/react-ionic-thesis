@@ -17,14 +17,11 @@ IonRow,
 IonSelectOption,
 IonListHeader,
 IonFabButton,
-IonItemSliding,
-IonItemOptions } from '@ionic/react';
+IonItemSliding} from '@ionic/react';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router'
-import * as firebase from 'firebase'
 import fire, { getUserInfo } from '../firebaseConfig';
 import { Plugins } from '@capacitor/core';
-import { isEmptyBindingElement } from 'typescript';
 
 
 
@@ -35,7 +32,7 @@ import { isEmptyBindingElement } from 'typescript';
 const ShippingPapers: React.FC = () => {
   const [warehouses, setWarehouses] = useState([''])
   const [chem_list, setChemlist] = useState([{}])
- 
+  const [warehousechem_list, setWarehouseChemlist] = useState([{}])
   const [chemicals, setChemicals] = useState([''])
   const [coordinates, setCoordinates] = useState({})
   const { Geolocation } = Plugins;
@@ -109,7 +106,7 @@ setChemlist(list)
             "date": new Date(),
             "comments": comment,
             "gps": coordinates,
-            "active": 1, 
+            "active": 0, 
             type: "shipping_papers"
           })
           .then(ref => {
@@ -117,6 +114,39 @@ setChemlist(list)
             if(ref.id){
               for(var x of chem_list){
                 const AddData: any = x;
+
+                for(var info of warehouses){
+                  const warehouse: any = info;
+                  if(warehouse.name === origin){
+                    for(var warehousechem of warehousechem_list){
+                      const wchem: any = warehousechem;
+                      if(warehouse.id === wchem.warehouseid && wchem.name === AddData.name ){
+                      const newamount = wchem.quantity-AddData.quantity
+                      
+
+                      fire 
+                      .firestore()
+                      .collection('asset_data').doc(wchem.id).update({
+                      
+                        'quantity': newamount
+                      })
+                      .then(function(){
+                        console.log('Warehouse Invetnory Updated')
+                      })
+                      .catch(function(error){
+                        console.error("Error writing document: ", error);
+                        
+                      })
+
+
+                      }
+
+
+                    }
+                  }
+
+                }
+
                 if(AddData.name && AddData.quantity){
                   fire 
                   .firestore()
@@ -141,20 +171,11 @@ setChemlist(list)
                 }
               }
               set('Shipping_paper', ref.id)
-
-              
-
             }
-            
-
-
-
-
             console.log("Document successfully written!");
           })
           .catch(function(error){
             console.error("Error writing document: ", error);
-           
           })
 
         }
@@ -194,11 +215,10 @@ setChemlist(list)
 
 
   useEffect(() => {
-
-  
     getCurrentPosition();
     let warehouse: any[] = [];
     let chemical: any[] = [];
+    let warehousechem: any[] = [];
     //Get Warehouses
     fire
       .firestore()
@@ -208,14 +228,32 @@ setChemlist(list)
           id: doc.id,
           ...doc.data()
         })))
-
         for (var key in warehouse_list) {
           warehouse.push(warehouse_list[key])
         }
-        setWarehouses(warehouse)
-
-       
+        setWarehouses(warehouse) 
       })
+
+      fire
+      .firestore()
+      .collection('asset_data').where('type', '==', 'warehouse_chemical')
+      .onSnapshot((snapshot) => {
+        const warehousechem_list = snapshot.docs.map(((doc) => ({
+          id: doc.id,
+          ...doc.data()
+          
+        })))
+        console.log(warehousechem_list)
+        for (var key in warehousechem_list) {
+          warehousechem.push(warehousechem_list[key])
+        }
+        setWarehouseChemlist(warehousechem) 
+      }) 
+
+
+
+
+
       // Get Chemicals
       fire
       .firestore()
@@ -228,7 +266,6 @@ setChemlist(list)
         for (var key in chemical_list) {
           chemical.push(chemical_list[key])
         }
-        
         setChemicals(chemical)
       })
 
@@ -305,10 +342,16 @@ setChemlist(list)
        
        
     </IonList>
-      <IonFabButton size="small" color="danger" onClick = {addchemical}>+</IonFabButton>
-      <IonButtons onClick = {submit} >Submit</IonButtons>
+      
         </IonContent>
      
+      </IonRow>
+
+      <IonRow>
+      <IonFabButton size="small" color="danger" onClick = {addchemical}>+</IonFabButton>
+      </IonRow>
+      <IonRow>
+      <IonButton  color="primary" expand="full" onClick = {submit}>Submit</IonButton>
       </IonRow>
       </IonGrid>
 

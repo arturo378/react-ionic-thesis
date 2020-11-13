@@ -17,14 +17,12 @@ import {
   IonSelectOption,
   IonListHeader,
   IonFabButton,
-  IonItemSliding,
-  IonItemOptions } from '@ionic/react';
+  IonItemSliding } from '@ionic/react';
   import React, { useState, useEffect } from 'react';
   import { useHistory } from 'react-router'
-  import * as firebase from 'firebase'
   import fire, { getUserInfo } from '../firebaseConfig';
   import { Plugins } from '@capacitor/core';
-  import { isEmptyBindingElement } from 'typescript';
+  
   
   
   
@@ -86,19 +84,10 @@ import {
         if(value){
           var data = JSON.parse(value)
           return data;
-        }
-        
-        
-      }
-      
-      
-       
-      
+        } 
+      }  
     }
 
-    
-    
-  
     const history = useHistory()
   
     function back(){
@@ -191,7 +180,6 @@ import {
       let newgallons: any;
         chemicals.map(function(key:any, val){
           updatedlist.push(key)
-          
           delverychems.map(function(key2:any, val2){
             if(key.name == key2.name){
               newgallons = key.quantity-key2.quantity;
@@ -199,9 +187,7 @@ import {
             }
           })
       })
-
               if(data){
-             
                 fire 
                 .firestore()
                 .collection('asset_data').add({
@@ -214,9 +200,9 @@ import {
                   "datanumber": "D-" + Math.round((new Date().getTime() / 1000)),
                   "createdBy": data.email,
                   "date": new Date(),
-                  type: "delivery"
+                  type: "delivery",
+                  "active": 0
                 })
-
                 .then(ref => {
                   console.log(ref.id)
                   if(ref.id){
@@ -226,29 +212,20 @@ import {
                         fire 
                         .firestore()
                         .collection('asset_data').add({
-                          
                           "name": AddData.name,
                           "quantity": AddData.quantity,
                          "deliveryid": ref.id,
                          "type": "delivery_chemical"
-                          
-                          
                         })
                         .then(function(){
-                         
                           console.log("Document successfully written!");
                         })
                         .catch(function(error){
                           console.error("Error writing document: ", error);
-                          
                         })
-      
                       }
                     }
                      set('Shipping_paper')
-      
-                    
-      
                   }
                   
       
@@ -314,10 +291,7 @@ import {
     useEffect(() => {
       getItem("first");
       var info: any = [];
-  
-    
       getCurrentPosition();
-
       fire
         .firestore()
         .collection('assets').where('type', 'in', ['company', 'lease', 'well'])
@@ -343,7 +317,7 @@ import {
       <IonPage>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Shipping Paper</IonTitle>
+            <IonTitle>Delivery</IonTitle>
             <IonButtons onClick = {back} slot="end">Back</IonButtons>
           </IonToolbar>
         </IonHeader>
@@ -437,7 +411,7 @@ import {
         </IonRow>
 
         <IonRow>
-        <IonButton color="primary" expand="full" onClick = {submit2}>Submit Deliveries</IonButton>
+        {/* <IonButton color="primary" expand="full" onClick = {submit2}>Submit Deliveries</IonButton> */}
         </IonRow>
   
   
@@ -451,7 +425,7 @@ import {
         <IonRow>
         <IonLabel>Chemical:</IonLabel>
         <IonSelect value={chemical} placeholder="Select One" onIonChange={e => setChemical(e.detail.value)}>
-              { chemicals.map((info: any) => (
+              { chemicals.filter(type => Object.keys(type).length != 0).map((info: any) => (
                     <IonSelectOption key={info.id} value={info.name}>{info.name}</IonSelectOption>
                   ))}
               </IonSelect>
