@@ -114,7 +114,6 @@ setChemlist(list)
             if(ref.id){
               for(var x of chem_list){
                 const AddData: any = x;
-
                 for(var info of warehouses){
                   const warehouse: any = info;
                   if(warehouse.name === origin){
@@ -122,8 +121,6 @@ setChemlist(list)
                       const wchem: any = warehousechem;
                       if(warehouse.id === wchem.warehouseid && wchem.name === AddData.name ){
                       const newamount = wchem.quantity-AddData.quantity
-                      
-
                       fire 
                       .firestore()
                       .collection('asset_data').doc(wchem.id).update({
@@ -135,39 +132,26 @@ setChemlist(list)
                       })
                       .catch(function(error){
                         console.error("Error writing document: ", error);
-                        
                       })
-
-
                       }
-
-
                     }
                   }
-
                 }
-
                 if(AddData.name && AddData.quantity){
                   fire 
                   .firestore()
                   .collection('asset_data').add({
-                    
                     "name": AddData.name,
                     "quantity": AddData.quantity,
                    "shippingid": ref.id,
                    "type": "shipping_chemical"
-                    
-                    
                   })
                   .then(function(){
-                   
                     console.log("Document successfully written!");
                   })
                   .catch(function(error){
                     console.error("Error writing document: ", error);
-                    
                   })
-
                 }
               }
               set('Shipping_paper', ref.id)
@@ -364,7 +348,7 @@ setChemlist(list)
       <IonModal isOpen={showModal} cssClass='my-custom-class'>
       <IonGrid>
       <IonRow>
-      <IonLabel>Destination Warehouse:</IonLabel>
+      <IonLabel>Add Chemical:</IonLabel>
       <IonSelect value={chemical} placeholder="Select One" onIonChange={e => setChemical(e.detail.value)}>
             { chemicals.map((info: any) => (
                   <IonSelectOption key={info.id} value={info.tradename}>{info.tradename}</IonSelectOption>
@@ -385,7 +369,7 @@ setChemlist(list)
 
     
           
-        <IonButton onClick={addchem}>Close Modal</IonButton>
+        <IonButton onClick={addchem}>Add Chemical</IonButton>
       </IonModal>
       </IonContent>
     </IonPage>

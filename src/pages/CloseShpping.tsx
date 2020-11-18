@@ -108,13 +108,9 @@ import {
               const wchem: any = warehousechem;
               if(warehouse.id === wchem.warehouseid && wchem.name === AddData.name ){
               const newamount = parseInt(wchem.quantity)+parseInt(AddData.quantity)
-              
-              
-
               fire 
               .firestore()
               .collection('asset_data').doc(wchem.id).update({
-              
                 'quantity': newamount
               })
               .then(function(){
@@ -122,18 +118,11 @@ import {
               })
               .catch(function(error){
                 console.error("Error writing document: ", error);
-                
               })
-
-
               }
-
-
             }
           }
-
         }
-
       }
 
 

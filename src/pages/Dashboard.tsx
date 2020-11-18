@@ -54,7 +54,7 @@ const Dashboard: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Dashobard</IonTitle>
+          <IonTitle>Home</IonTitle>
           <IonButtons slot="end"  onClick = {logout}>Logout</IonButtons>
         </IonToolbar>
       </IonHeader>
